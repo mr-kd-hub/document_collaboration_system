@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors"
 import * as userService from "./service/user.service";
 const dotenv = require('dotenv');
 dotenv.config();
@@ -9,14 +10,14 @@ const mongoURI = process.env.MONGODB_URI  || "mongodb://localhost:27017/collabor
 
 const app = express();
 app.use(express.json());
-
+app.use(cors())
 //mongodb://localhost:27017
 app.use((req, res, next) => {
   console.log(`Request ${req.method} and api ${req.url}`);
   next();
 });
-app.post("/reg", userService.registerUser);
-app.post("/login", userService.login);
+app.post("/sign-up", userService.SignUp);
+app.post("/sign-in", userService.SignIn);
 
 mongoose
   .connect(mongoURI)

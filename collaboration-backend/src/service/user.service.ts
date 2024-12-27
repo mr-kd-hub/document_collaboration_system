@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import validator from "validator";
 import User from "../model/user.mode";
 import { decryptPassword, generateToken } from "../helper";
-export const registerUser = async (
+export const SignUp = async (
   req: Request,
   res: Response
 ): Promise<any> => {
@@ -22,8 +22,10 @@ export const registerUser = async (
       password,
     });
     await user.save();
+    const token = await generateToken(user)
     return res.status(201).send({
       message: "User created",
+      token
     });
   } catch (err: any) {
     res.status(500).send({
@@ -32,7 +34,7 @@ export const registerUser = async (
   }
 };
 
-export const login = async (req: Request, res: Response): Promise<any> => {
+export const SignIn = async (req: Request, res: Response): Promise<any> => {
   try {
     const { email, password } = req.body
     if (!email || !password)
