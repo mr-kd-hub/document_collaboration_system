@@ -41,7 +41,7 @@ function SignUpCompoent() {
   const { email, password, error } = values;
   useEffect(()=>{
     dispatch(logout());
-  },[])
+  },[dispatch])
   return (
     <div>
       <section className="bg-gray-50 dark:bg-gray-900">

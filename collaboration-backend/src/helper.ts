@@ -36,7 +36,6 @@ export const verifyToken = (token: string) => {
         return jwt.verify(token,'shhhhh')
     }
     catch(err){
-        console.log("error in tokn validation");
-        
+        throw err;
     }
 }
