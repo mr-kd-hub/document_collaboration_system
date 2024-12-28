@@ -1,15 +1,18 @@
 "use client";
 import { RootState } from "@/app/redux/store";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import { logout } from "@/app/redux/slice/auth.slice";
 import { useRouter, usePathname } from "next/navigation";
+import { setAuthStateAction } from "@/app/redux/actions/auth.action";
 
 function Navbar() {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
+  console.log("isAuthenticated",isAuthenticated);
+  
   const authDetail = useSelector(
     (state: RootState) => state.auth.detail
   );
@@ -24,6 +27,11 @@ function Navbar() {
     dispatch(logout()); // Dispatch the logout action
     router.push("/sign-in"); // Redirect to login page
   };
+
+  useEffect(()=>{
+    dispatch(setAuthStateAction())
+  },[dispatch])
+  
   return (
     <nav className="bg-white shadow-md dark:bg-gray-900 fixed w-full top-0 left-0 z-10">
       <div className="max-w-screen-xl flex justify-between items-center p-4 mx-auto">
@@ -32,7 +40,7 @@ function Navbar() {
           <Link href="/" className="text-2xl font-semibold text-blue-700 dark:text-white">
             Documents App
           </Link>
-          <div className="md:flex hidden space-x-6">
+          {isAuthenticated && <div className="md:flex hidden space-x-6">
             <Link
               href="/"
               className={`py-2 px-3 rounded-md text-sm font-medium ${pathName === "/" ? "text-blue-700" : "text-gray-900 hover:text-blue-700"} dark:text-white dark:hover:text-blue-500`}
@@ -45,7 +53,7 @@ function Navbar() {
             >
               New Document
             </Link>
-          </div>
+          </div>}
         </div>
 
         <div className="flex items-center gap-4">
@@ -106,7 +114,7 @@ function Navbar() {
 
       {/* Mobile Dropdown Menu */}
       <div className="md:hidden space-y-4 p-4 bg-gray-50 dark:bg-gray-800">
-        <Link
+        {isAuthenticated && <><Link
           href="/"
           className="block py-2 px-3 text-lg text-gray-900 dark:text-white hover:text-blue-700 dark:hover:text-blue-500"
         >
@@ -117,7 +125,7 @@ function Navbar() {
           className="block py-2 px-3 text-lg text-gray-900 dark:text-white hover:text-blue-700 dark:hover:text-blue-500"
         >
           New Document
-        </Link>
+        </Link></>}
         {isAuthenticated ? (
           <button
             onClick={handleLogout}

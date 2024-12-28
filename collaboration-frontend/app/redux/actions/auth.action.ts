@@ -58,7 +58,7 @@ export const registerAction = (body: any) => {
   };
 };
 
-export const setAuthStateAction = (token: any): any => {
+export const setAuthStateAction = (token?: any): any => {
   return async (dispatch: AppDispatch, getState: any) => {
     const tk = token || Cookies.get("token") //localStorage.getItem("token");
     dispatch(setAuthState(tk));
