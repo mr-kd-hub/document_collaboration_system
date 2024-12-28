@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import validator from "validator";
-import User from "../model/user.mode";
+import userModel from "../model/user.mode";
 import { decryptPassword, generateToken } from "../helper";
 export const SignUp = async (
   req: Request,
@@ -17,7 +17,7 @@ export const SignUp = async (
         message: "Provide valid email",
       });
 
-    const user: any = new User({
+    const user: any = new userModel({
       email: email,
       password,
     });
@@ -45,7 +45,7 @@ export const SignIn = async (req: Request, res: Response): Promise<any> => {
         return res.status(403).send({
           message: "Provide valid email",
         });
-    const user = await User.findOne({ email: email }).lean();
+    const user = await userModel.findOne({ email: email }).lean();
     if(!user) return res.status(204).send({
         message:"No user found with given email please regiser"
     })

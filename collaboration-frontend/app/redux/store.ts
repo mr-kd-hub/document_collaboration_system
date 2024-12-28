@@ -2,9 +2,11 @@
 'use client'
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slice/auth.slice"
+import documentReducer from "./slice/dcuments.slice"
 export const store = configureStore({
     reducer:{
-        auth:authReducer
+        auth:authReducer,
+        document: documentReducer
     }
 })
 

@@ -20,7 +20,7 @@ export const setErrorAction = (err: string): any => {
 export const loginAction = (body: any) => {
   return async (dispatch: AppDispatch, getState: any) => {
     try {
-      const response = await axios.post(`/sign-in`, {
+      const response = await axios.post(`/auth/sign-in`, {
         ...body,
       });
       if (response.status === 200) {
@@ -40,7 +40,7 @@ export const loginAction = (body: any) => {
 export const registerAction = (body: any) => {
   return async (dispatch: AppDispatch, getState: any) => {
     try {
-      const response = await axios.post(`/sign-up`, {
+      const response = await axios.post(`/auth/sign-up`, {
         ...body,
       });
       if (response.status === 201) {

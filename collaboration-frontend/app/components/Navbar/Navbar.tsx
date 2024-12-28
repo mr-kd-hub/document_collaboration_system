@@ -13,8 +13,6 @@ function Navbar() {
   const router = useRouter();
   const dispatch = useDispatch();
   const pathName = usePathname();
-
-  console.log("pathName",pathName);
   
   const handleLogout = () => {
     dispatch(logout()); // Dispatch the logout action
@@ -40,7 +38,8 @@ function Navbar() {
                   </Link>
                 </li>
               ) : (
-                pathName !== "/sign-in" && <li>
+                pathName !== "/sign-in" && (
+                  <li>
                     <Link
                       href="/sign-in"
                       className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
@@ -49,16 +48,33 @@ function Navbar() {
                       Sign in
                     </Link>
                   </li>
+                )
               )}
-              {pathName !== "/sign-up" && <li>
-                <Link
-                  href="/sign-up"
-                  className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                  aria-current="page"
-                >
-                  Sign up
-                </Link>
-              </li>}
+              {pathName !== "/sign-up" && (
+                <li>
+                  <Link
+                    href="/sign-up"
+                    className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                    aria-current="page"
+                  >
+                    Sign up
+                  </Link>
+                </li>
+              )}
+              <Link
+                href="/"
+                className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                aria-current="page"
+              >
+                Documents
+              </Link>
+              <Link
+                href="/create"
+                className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                aria-current="page"
+              >
+                New Documents
+              </Link>
             </ul>
           </div>
         </div>
