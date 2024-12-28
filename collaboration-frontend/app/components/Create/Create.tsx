@@ -22,9 +22,7 @@ function CreateComponent(props: any) {
     (state: RootState) => state.document.document
   );
   const authDetail = useSelector((state: RootState) => state.auth.detail);
-  const [activeUsers, setActiveUsers] = useState<string[]>([]);
 
-  console.log("activeUsers",activeUsers);
   
 
   const formik = useFormik({
@@ -49,7 +47,6 @@ function CreateComponent(props: any) {
   const { title, content } = values;
 
   const documentId = values?.id || id
-  console.log("documentId",documentId);
   
   // const upsertDocument = async (field: string, value: string) => {
   //   const body: { id?: string, title?: string; content?: string} = {
@@ -119,6 +116,11 @@ function CreateComponent(props: any) {
         setValues((prev: any) => ({ ...prev, ...payload }));
       });
 
+      // socket.on("cursor-update", (data) => {
+      //   const { userId, position } = data;
+      //   updateCursorDisplay(userId, position);
+      // });
+
       
       return () => {
         socket.off("documentState");
@@ -173,6 +175,34 @@ function CreateComponent(props: any) {
     const newText = e.target.value
     socket.emit('updateDocument', {title: newText});
   }
+
+//   const createCursorElement = (userId:string) => {
+//     const cursor = document.createElement('div');
+//     cursor.id = `cursor-${userId}`;
+//     cursor.className = 'w-0 h-5 bg-red-700 z-10';
+//     cursor.style.position = 'absolute';
+//     cursor.style.width = '2px';
+//     cursor.style.height = '20px';
+//     cursor.style.backgroundColor = 'red';
+//     cursor.style.zIndex = "1000";
+//     document.body.appendChild(cursor);
+//     return cursor;
+// };
+//   function updateCursorDisplay (userId:string, position:any) {
+//     // Find or create the cursor element for this user
+//     const cursorElement = document.getElementById(`cursor-${userId}`) || createCursorElement(userId);
+
+//     // Position the cursor within the editor
+//     if (position.container) {
+//         const targetElement = document.getElementById(position.container);
+//         if (targetElement) {
+//             const rect = targetElement.getBoundingClientRect();
+//             cursorElement.style.left = `${rect.left + position.start}px`; // Adjust this based on the offset logic
+//             cursorElement.style.top = `${rect.top}px`;
+//         }
+//     }
+// };
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col h-screen p-10 overflow-hidden">
       <div className="mb-6">

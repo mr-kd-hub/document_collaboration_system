@@ -69,7 +69,7 @@ export const connectSocket = (socket: any) => {
         }
         await documentModel.findByIdAndUpdate(docId, {
           ...query,
-        },{ upsert: true,  });//returnDocument: "after"
+        },{ upsert: true,  });
         
         socket.to(docId).emit("updateDocument", {
           ...query
@@ -80,6 +80,15 @@ export const connectSocket = (socket: any) => {
       }
     }
   });
+
+  // Handle cursor position event
+  socket.on('cursor-update', (data:any) => {
+    const { documentId, userId, position } = data;
+    console.log("send to FE cursor-position",data);
+
+    // Broadcast cursor position to others in the same room
+    socket.to(documentId).emit('cursor-update', { userId, position });
+});
 
   // Handle disconnection
   socket.on("disconnect", () => {
