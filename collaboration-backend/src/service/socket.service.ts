@@ -19,9 +19,10 @@ export const authSocketMiddleware = (socket: any, next: any) => {
   }
 };
 
+const usersInRoom:any = {}
 export const connectSocket = (socket: any) => {
-  console.log("User connected");
   const currentUser = socket.data.user;
+
   // Join a specific document
   socket.on("join-document", (docId: string) => {
     socket.join(docId);
@@ -36,15 +37,17 @@ export const connectSocket = (socket: any) => {
 
   // Load the document content
   socket.on("load-document", async (docId: string) => {
-    try {
+    try {        
       let document = await documentModel.findById(docId).lean();
       if (!document) {
         document = await documentModel.create({
           content: "",
           title: "Untitled document",
-        }); // _id: docId,
+          owner: String(currentUser?.userId),
+        });
+        socket.join(document?._id);
       }
-      handleCollaborators(docId, currentUser?.userId);
+    //   handleCollaborators(docId, currentUser?.userId);      
       socket.emit("documentState", document);
     } catch (err) {
       console.error("Error loading document:", err);
@@ -53,10 +56,7 @@ export const connectSocket = (socket: any) => {
 
   // Update the document content in real-time
   socket.on("updateDocument", async (payload: any) => {
-    console.log("st1",payload);    
-    const docId = [...socket.rooms].find((room) => room !== socket.id); // Get the document room
-    console.log("st2",docId);
-
+    const docId = [...socket.rooms].find((room) => room !== socket.id);
     if (docId) {
       try {
         const { title, content } = payload;
@@ -67,13 +67,9 @@ export const connectSocket = (socket: any) => {
         if (content !== undefined) {
           query["content"] = content;
         }
-        console.log("st3",query);
         await documentModel.findByIdAndUpdate(docId, {
           ...query,
-        });
-        console.log("st4", {
-            ...query
-          });
+        },{ upsert: true,  });//returnDocument: "after"
         
         socket.to(docId).emit("updateDocument", {
           ...query

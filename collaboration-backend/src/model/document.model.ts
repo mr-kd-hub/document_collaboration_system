@@ -21,7 +21,7 @@ const documentSchema = new Schema(
        type:Boolean,
        default: false,  
     },
-    collaborators: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    collaborators: [{ type: String, ref: "User" }],
   },
   { timestamps: true }
 );

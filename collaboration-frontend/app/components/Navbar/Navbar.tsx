@@ -11,12 +11,10 @@ function Navbar() {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
-  console.log("isAuthenticated",isAuthenticated);
   
   const authDetail = useSelector(
     (state: RootState) => state.auth.detail
   );
-  console.log("authDetail",authDetail);
   
   
   const router = useRouter();

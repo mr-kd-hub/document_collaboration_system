@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import TextEditor from "../TextEditor/TextEditor";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -21,6 +21,11 @@ function CreateComponent(props: any) {
   const currentDocument = useSelector(
     (state: RootState) => state.document.document
   );
+  const authDetail = useSelector((state: RootState) => state.auth.detail);
+  const [activeUsers, setActiveUsers] = useState<string[]>([]);
+
+  console.log("activeUsers",activeUsers);
+  
 
   const formik = useFormik({
     initialValues: {
@@ -29,9 +34,10 @@ function CreateComponent(props: any) {
       content: id ? (currentDocument?.content || "") : "",
       versions: id ? (Array.isArray(currentDocument?.versions) ? [...currentDocument?.versions] : []) : [],
     },
-    onSubmit: async(values:any,{ resetForm }:any) => {
+    onSubmit: async(values:any,{ resetForm, setValues }:any) => {
       try{
-        await dispatch(upsertDocumentAction({ ...values }));
+        const id = await dispatch(upsertDocumentAction({ ...values }));
+        setValues((prev: any) => ({ ...prev, id }));
         // resetForm()
       }
       catch(err:any){
@@ -43,27 +49,30 @@ function CreateComponent(props: any) {
   const { title, content } = values;
 
   const documentId = values?.id || id
-  const upsertDocument = async (field: string, value: string) => {
-    const body: { id?: string, title?: string; content?: string} = {
-      id: id || values?.id,
-    };
-    if(field === "title") body.title = value;
-    if(field === "content") body.content = value;
-    const new_id = await dispatch(upsertDocumentAction({ ...body }));
-    setValues({ ...values, id: new_id });
-  };
+  console.log("documentId",documentId);
+  
+  // const upsertDocument = async (field: string, value: string) => {
+  //   const body: { id?: string, title?: string; content?: string} = {
+  //     id: documentId,
+  //   };
+  //   if(field === "title") body.title = value;
+  //   if(field === "content") body.content = value;
+  //   const new_id = await dispatch(upsertDocumentAction({ ...body }));
+  //   setValues({ ...values, id: new_id });
+  // };
 
-  const saveDocument = useCallback(async () => {
-    try {
-      // setIsSaving(true);
-      const new_id = await dispatch(upsertDocumentAction({id: documentId,  title: values?.title, content: values?.content }));
-      setValues({ ...values, id: new_id });
-      // setIsSaving(false);
-    } catch (error) {
-      console.error('Error saving document:', error);
-      // setIsSaving(false);
-    }
-  }, [documentId, values?.content]);
+  // const saveDocument = useCallback(async () => {
+  //   try {
+      
+  //     // setIsSaving(true);
+  //     const new_id = await dispatch(upsertDocumentAction({id: documentId,  title: values?.title, content: values?.content }));
+  //     setValues({ ...values, id: new_id });
+  //     // setIsSaving(false);
+  //   } catch (error) {
+  //     console.error('Error saving document:', error);
+  //     // setIsSaving(false);
+  //   }
+  // }, [documentId, values?.content]);
 
   useEffect(() => {
     async function callApi(){
@@ -80,7 +89,7 @@ function CreateComponent(props: any) {
         ...values,
         content: currentDocument?.content || "",
         title: currentDocument?.title || "",
-        id: currentDocument?._id || id,
+        id: currentDocument?._id || documentId,
         versions: Array.isArray(currentDocument?.versions) ? [...currentDocument?.versions] : [],
       })
     }
@@ -93,57 +102,64 @@ function CreateComponent(props: any) {
   },[currentDocument, dispatch, id])
   
   useEffect(() => {
-      if (documentId) {
-  
-        // Join the document room
-        socket.emit('join-document', documentId);
-  
-        // Join the document room and load the document content
-        socket.emit('load-document', documentId);
-  
-        // Listen for the document's initial content
-        socket.on('documentState', (payload) => {
-          setValues((prev:any)=>({...prev,...payload}));
-        });
-  
-        // Listen for real-time updates from other users
-        socket.on('updateDocument', (payload) => {
-          console.log("emit updateDocument",documentId,payload);
-          setValues((prev:any)=>({...prev,...payload}));
-        });
-  
-        // Cleanup event listeners when the component unmounts
-        return () => {
-          socket.emit('leave-document', documentId); // Optional: notify server about leaving
-          socket.off('documentState');
-          socket.off('updateDocument');
-        };
-      }
-    }, [documentId,setValues]);
+    if (documentId) {
+     
+      socket.emit("join-document", documentId);
+
+      // Join the document room and load the document content
+      socket.emit("load-document", documentId);
+
+      // Listen for the document's initial content
+      socket.on("documentState", (payload) => {
+        setValues((prev: any) => ({ ...prev, id: payload?._id, ...payload }));
+      });
+
+      // Listen for real-time updates from other users
+      socket.on("updateDocument", (payload) => {
+        setValues((prev: any) => ({ ...prev, ...payload }));
+      });
+
+      
+      return () => {
+        socket.off("documentState");
+        socket.off("user-presence");
+      };
+    }
+  }, [documentId, setValues]);
 
     //auto save document
   // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     saveDocument();
-  //   }, 2000); // Save after 2 seconds of inactivity
+    // const timer = setTimeout(() => {
+    //   saveDocument();
+    // }, 2000); // Save after 2 seconds of inactivity
 
   //   return () => clearTimeout(timer);
   // }, [values?.content, saveDocument]);
 
   // Save document on page unload
-  useEffect(() => {
-    const handleBeforeUnload = (event:any) => {
-      saveDocument();
-      event.preventDefault();
-      event.returnValue = ''; // Necessary for Chrome
-    };
+  // useEffect(() => {
+  //   const handleBeforeUnload = (event: any) => {
+  //     // Call saveDocument to persist the changes
+  //     saveDocument();
+      
+  //     // Prevent default unload behavior
+  //     event.preventDefault();
+  //     event.returnValue = ''; // For Chrome compatibility
+  //   };
+  
+  //   const handleUnload = () => {
+  //     // Save the document during unload
+  //     saveDocument();
+  //   };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+  //   window.addEventListener('beforeunload', handleBeforeUnload);
+  //   window.addEventListener('unload', handleUnload);
 
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [saveDocument]);
+  //   return () => {
+  //     window.removeEventListener('beforeunload', handleBeforeUnload);
+  //     window.removeEventListener('unload', handleUnload);
+  //   };
+  // }, [saveDocument]);
 
   const loadversion = (version:any) => {
     socket.emit("updateDocument", {
@@ -166,7 +182,7 @@ function CreateComponent(props: any) {
         <input
           name="title"
           value={title || ""}
-          onChange={handleChange}
+          onChange={handleTitleChange}
           type="text"
           id="default-input"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -179,7 +195,7 @@ function CreateComponent(props: any) {
             setValues={setValues}
             content={content}
             handleChange={handleChange}
-            documentId={values?.id || id}
+            documentId={documentId}
           />
           <button
             type="submit"

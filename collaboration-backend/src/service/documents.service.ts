@@ -118,6 +118,7 @@ export const upsertDocument = async (req: any, res: Response): Promise<any> => {
 
 export const handleCollaborators = async(doc_id:string,collaborator_id:string) => {
   try{
+    if(!doc_id) return
     const document:any = await documentModel.findById(doc_id);
     if (!document.collaborators.includes(collaborator_id)) {
       document.collaborators.push(collaborator_id);
