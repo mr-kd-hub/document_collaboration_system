@@ -1,12 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function reverseArray(arr:any[]) {
-    const n:number = arr?.length || 0;
-    const temp = new Array(n);
-    for (let i = 0; i < n; i++)
-        temp[i] = arr[n - i - 1];
-  
-    for (let i = 0; i < n; i++)
-        arr[i] = temp[i];
+import { io, Socket } from "socket.io-client";
+import Cookies from "js-cookie";
 
-    return arr
-}
+export const socket: Socket = io("http://localhost:8080", {
+    auth: {
+      token: Cookies.get("token"), // Attach token here
+    },
+  });

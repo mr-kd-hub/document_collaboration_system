@@ -56,7 +56,7 @@ export const upsertDocumentAction = (body: any): any => {
         ...body,
       });
       if (response.status === 200) {
-        dispatch(upsertDocument(response?.data?.document));
+        // dispatch(upsertDocument(response?.data?.document));
         return response?.data?.document?._id;
       }
       dispatch(setError("Something went wrong while login"));

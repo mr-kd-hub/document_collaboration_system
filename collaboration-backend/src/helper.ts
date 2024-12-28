@@ -22,7 +22,7 @@ export const decryptPassword = async (
 
 export const generateToken = async(payload:any) => {
     try{
-        let token = await jwt.sign({ userId : String(payload._id)}, 'shhhhh');
+        let token = await jwt.sign({ userId : String(payload._id), email: payload?.email}, 'shhhhh');
         return token
     }
     catch(err){

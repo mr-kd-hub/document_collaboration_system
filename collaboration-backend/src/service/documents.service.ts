@@ -85,7 +85,7 @@ export const deleteDocument = async (req: any, res: Response): Promise<any> => {
 
 export const upsertDocument = async (req: any, res: Response): Promise<any> => {
   try {
-    const userId = req.assignId;
+    const userId = String(req.assignId);
     const { content, title, id } = req.body;
     let document: any;
     if (id) {
@@ -96,18 +96,16 @@ export const upsertDocument = async (req: any, res: Response): Promise<any> => {
     }
     if (content !== undefined) {
       document.content = content;
-      document.versions.push({ content });
+      
     }
     if(title === undefined){
         document.title = "Untitled document";
-        document.versions.push({ title: "Untitled document" });
     }
-        console.log("title",title);
         
     if (title !== undefined) {
       document.title = title;
-      document.versions.push({ title });
     }
+    document.versions.push({ content, title: title || "Untitled document" });
     if(!document.collaborators.includes(userId)) document.collaborators.push(userId);
     await document.save();
     return res.status(200).send({ document });
@@ -117,3 +115,17 @@ export const upsertDocument = async (req: any, res: Response): Promise<any> => {
     return res.status(500).send({ message: error.message });
   }
 };
+
+export const handleCollaborators = async(doc_id:string,collaborator_id:string) => {
+  try{
+    const document:any = await documentModel.findById(doc_id);
+    if (!document.collaborators.includes(collaborator_id)) {
+      document.collaborators.push(collaborator_id);
+      await document.save();
+    }
+  }
+  catch(err){
+    console.log("error in handleCollaborators",err);
+    
+  }
+}
