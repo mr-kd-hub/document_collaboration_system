@@ -25,105 +25,124 @@ function Navbar() {
     router.push("/sign-in"); // Redirect to login page
   };
   return (
-    <>
-      <nav className="bg-white border-gray-200 dark:bg-gray-900">
-        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-          <div className="w-full md:block md:w-auto" id="navbar-default">
-            <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-              {/* {isAuthenticated ? (
-                <li>
-                  <Link
-                    onClick={handleLogout}
-                    href="#"
-                    className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                    aria-current="page"
-                  >
-                    Log out
-                  </Link>
-                </li>
-              ) : (
-                pathName !== "/sign-in" && (
-                  <li>
-                    <Link
-                      href="/sign-in"
-                      className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                      aria-current="page"
-                    >
-                      Sign in
-                    </Link>
-                  </li>
-                )
-              )}
-              {pathName !== "/sign-up" && (
-                <li>
-                  <Link
-                    href="/sign-up"
-                    className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                    aria-current="page"
-                  >
-                    Sign up
-                  </Link>
-                </li>
-              )} */}
-              <Link
-                href="/"
-                className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                aria-current="page"
-              >
-                Documents
-              </Link>
-              <Link
-                href="/create"
-                className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                aria-current="page"
-              >
-                New Documents
-              </Link>
-            </ul>
-          </div>
-          <div className="flex items-center gap-4">
-            <ul className="flex gap-4">
-              {isAuthenticated ? (
-                <li>
-                  <Link
-                    onClick={handleLogout}
-                    href="#"
-                    className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                    aria-current="page"
-                  >
-                    Log out
-                  </Link>
-                </li>
-              ) : (
-                pathName !== "/sign-in" && (
-                  <li>
-                    <Link
-                      href="/sign-in"
-                      className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                      aria-current="page"
-                    >
-                      Sign in
-                    </Link>
-                  </li>
-                )
-              )}
-              {pathName !== "/sign-up" && (
-                <li>
-                  <Link
-                    href="/sign-up"
-                    className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                    aria-current="page"
-                  >
-                    Sign up
-                  </Link>
-                </li>
-              )}
-            </ul>
-            {authDetail && <div>{authDetail?.email}</div>}
+    <nav className="bg-white shadow-md dark:bg-gray-900 fixed w-full top-0 left-0 z-10">
+      <div className="max-w-screen-xl flex justify-between items-center p-4 mx-auto">
+        {/* Logo and Menu */}
+        <div className="flex items-center space-x-4">
+          <Link href="/" className="text-2xl font-semibold text-blue-700 dark:text-white">
+            Documents App
+          </Link>
+          <div className="md:flex hidden space-x-6">
+            <Link
+              href="/"
+              className={`py-2 px-3 rounded-md text-sm font-medium ${pathName === "/" ? "text-blue-700" : "text-gray-900 hover:text-blue-700"} dark:text-white dark:hover:text-blue-500`}
+            >
+              Documents
+            </Link>
+            <Link
+              href="/create"
+              className={`py-2 px-3 rounded-md text-sm font-medium ${pathName === "/create" ? "text-blue-700" : "text-gray-900 hover:text-blue-700"} dark:text-white dark:hover:text-blue-500`}
+            >
+              New Document
+            </Link>
           </div>
         </div>
-      </nav>
-    </>
+
+        <div className="flex items-center gap-4">
+          {isAuthenticated ? (
+            <>
+              <div className="hidden md:block text-sm font-medium text-gray-900 dark:text-white">
+                {authDetail?.email}
+              </div>
+              <button
+                onClick={handleLogout}
+                className="py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-colors duration-200"
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <div className="flex gap-4">
+              {pathName !== "/sign-in" && (
+                <Link
+                  href="/sign-in"
+                  className="py-2 px-3 text-sm font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-colors duration-200"
+                >
+                  Sign in
+                </Link>
+              )}
+              {pathName !== "/sign-up" && (
+                <Link
+                  href="/sign-up"
+                  className="py-2 px-3 text-sm font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-colors duration-200"
+                >
+                  Sign up
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Menu Toggle */}
+        <div className="md:hidden">
+          <button className="text-gray-900 dark:text-white">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Dropdown Menu */}
+      <div className="md:hidden space-y-4 p-4 bg-gray-50 dark:bg-gray-800">
+        <Link
+          href="/"
+          className="block py-2 px-3 text-lg text-gray-900 dark:text-white hover:text-blue-700 dark:hover:text-blue-500"
+        >
+          Documents
+        </Link>
+        <Link
+          href="/create"
+          className="block py-2 px-3 text-lg text-gray-900 dark:text-white hover:text-blue-700 dark:hover:text-blue-500"
+        >
+          New Document
+        </Link>
+        {isAuthenticated ? (
+          <button
+            onClick={handleLogout}
+            className="block py-2 px-3 text-lg font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-colors duration-200"
+          >
+            Log out
+          </button>
+        ) : (
+          <>
+            <Link
+              href="/sign-in"
+              className="block py-2 px-3 text-lg text-gray-900 dark:text-white hover:text-blue-700 dark:hover:text-blue-500"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/sign-up"
+              className="block py-2 px-3 text-lg text-gray-900 dark:text-white hover:text-blue-700 dark:hover:text-blue-500"
+            >
+              Sign up
+            </Link>
+          </>
+        )}
+      </div>
+    </nav>
   );
 }
 

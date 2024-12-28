@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 // import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -32,10 +32,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-      <Provider store={store}>
-        <Navbar />
-        {children}
-      </Provider>
+        <Provider store={store}>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+
+            <main className="pt-16 flex-1 overflow-auto">{children}</main>
+          </div>
+        </Provider>
       </body>
     </html>
   );

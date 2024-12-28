@@ -158,28 +158,24 @@ function CreateComponent(props: any) {
     socket.emit('updateDocument', {title: newText});
   }
   return (
-    <form onSubmit={handleSubmit} className="flex-col h-full p-10">
+    <form onSubmit={handleSubmit} className="flex flex-col h-screen p-10 overflow-hidden">
       <div className="mb-6">
-        <label
-          htmlFor="default-input"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
+        <label htmlFor="default-input" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Title
         </label>
         <input
           name="title"
           value={title || ""}
-          // onBlur={(e) => upsertDocument("title", e.target.value)}
-          onChange={handleTitleChange}
+          onChange={handleChange}
           type="text"
           id="default-input"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
       </div>
-      <div className="flex h-[`calc(100vh - 100px)`] w-full justify-between">
-        <div className="w-[80%] flex-col flex gap-6 p-5">
+
+      <div className="flex flex-1 gap-6">
+        <div className="w-[75%] flex flex-col gap-6 overflow-hidden">
           <TextEditor
-            // onBlur={upsertDocument}
             setValues={setValues}
             content={content}
             handleChange={handleChange}
@@ -193,11 +189,9 @@ function CreateComponent(props: any) {
             Save
           </button>
         </div>
-        <div className="w-[20%] overflow-scroll">
-          <Versions
-            loadVersion={loadversion}
-            versionList={[...values?.versions]}
-          />
+
+        <div className="w-[25%] overflow-y-auto">
+          <Versions loadVersion={loadversion} versionList={values?.versions || []} />
         </div>
       </div>
     </form>

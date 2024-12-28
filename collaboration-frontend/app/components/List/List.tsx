@@ -24,56 +24,54 @@ function List() {
     <div className="p-10">
       {documents && documents?.length ? (
         <>
-        <table className="w-full h-full table-auto">
-            <thead className="text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <table className="w-full table-auto bg-white rounded-lg shadow-lg">
+            <thead className="text-gray-700 uppercase bg-gradient-to-r from-blue-600 to-blue-700 text-white">
               <tr>
-                <th scope="col" className="px-6 py-3">
-                  Title
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Last modified
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Actions
-                </th>
+                <th scope="col" className="px-6 py-3 text-left">Title</th>
+                <th scope="col" className="px-6 py-3 text-left">Last Modified</th>
+                <th scope="col" className="px-6 py-3 text-left">Actions</th>
               </tr>
             </thead>
-            {!loading ? <tbody>
-              {documents?.length
-                ? documents.map((task, index) => {
-                    return (
-                      <tr
-                        key={index}
-                        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 p-4"
-                      >
-                        <td align="center">
-                          <Link href={`/create/${task?._id}`}>{task?.title}</Link></td>
-                        
-                        <td align="center">{task.updatedAt ? new Date(task.updatedAt).toLocaleDateString() : "-"}</td>
-                        <td align="center">
-                          <div
-                            className="inline-flex rounded-md shadow-sm"
-                            role="group"
-                          >
-                            
-                            <button
-                              type="button"
-                              onClick={() => handleAction("delete", task?._id)}
-                              className="px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 items-center flex"                            >
-                              Delete
-                            </button>
-                            
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                : "No Task found"}
-            </tbody> : <div className="w-full justify-center items-center flex-1 flex fixed">Loading...</div>}
+            {!loading ? (
+              <tbody>
+                {documents?.length
+                  ? documents.map((task, index) => {
+                      return (
+                        <tr
+                          key={index}
+                          className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+                        >
+                          <td className="px-6 py-4">
+                            <Link href={`/create/${task?._id}`} className="text-blue-600 hover:underline">
+                              {task?.title}
+                            </Link>
+                          </td>
+                          <td className="px-6 py-4 text-gray-500">
+                            {task.updatedAt ? new Date(task.updatedAt).toLocaleDateString() : "-"}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="inline-flex space-x-2">
+                              <button
+                                type="button"
+                                onClick={() => handleAction("delete", task?._id)}
+                                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700 rounded-lg transition-all"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  : "No documents found"}
+              </tbody>
+            ) : (
+              <div className="w-full flex justify-center items-center h-40 text-lg font-semibold text-gray-500">Loading...</div>
+            )}
           </table>
         </>
       ) : (
-        "No documents found"
+        <div className="w-full text-center text-xl font-semibold text-gray-500">No documents found</div>
       )}
     </div>
   );

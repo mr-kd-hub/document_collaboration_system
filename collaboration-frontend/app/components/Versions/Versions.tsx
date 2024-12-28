@@ -8,40 +8,34 @@ function Versions(props: { versionList: any[]; loadVersion: any }) {
   );
 
   return (
-    <ol className="relative border-s h-full border-gray-200 dark:border-gray-700">
+    <div className="overflow-y-auto max-h-[calc(100vh-100px)] p-4">
       {sortedVersionList && sortedVersionList.length ? (
-        <>
-          {sortedVersionList.map((version: any, index: number) => {
-            return (
-                <li key={index} className="mb-10 ms-4">
-                  <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                  <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-                    {new Date(version?.createdAt).toLocaleString()}
-                  </time>
-                  <h3
-                    onClick={() => loadVersion(version)}
-                    className="text-lg font-semibold text-gray-900 dark:text-white"
-                  >
-                    {version.title || "Untitled document"}
-                  </h3>
-                  <p className="text-base font-normal text-gray-500 dark:text-gray-400">
-                    {version.content || "-"}
-                  </p>
-                </li>
-            );
-          })}
-          {/* {displayedItems.length < versionList.length && (
-            <div className="flex w-full justify-center items-center p-2">
-                <button className="text-blue-900" color="blue" onClick={loadMore}>Load More</button>
-            </div>            
-          )} */}
-        </>
+        <ul className="space-y-6">
+          {sortedVersionList.map((version: any, index: number) => (
+            <li
+              key={index}
+              className="relative p-4 border rounded-lg shadow-sm hover:shadow-lg cursor-pointer transition-all bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+              onClick={() => loadVersion(version)}
+            >
+              <div className="absolute w-3 h-3 bg-blue-500 rounded-full mt-2 -left-2 border border-white dark:border-gray-800 dark:bg-gray-700"></div>
+              <time className="block mb-2 text-sm text-gray-500 dark:text-gray-400">
+                {new Date(version?.createdAt).toLocaleString()}
+              </time>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                {version.title || "Untitled document"}
+              </h3>
+              <p className="text-base text-gray-700 dark:text-gray-400 truncate">
+                {version.content || "No content available."}
+              </p>
+            </li>
+          ))}
+        </ul>
       ) : (
-        <div className="flex w-full justify-center items-center p-2">
-            No vesions available
-        </div>        
+        <div className="flex justify-center items-center p-2 text-gray-500 dark:text-gray-400">
+          No versions available
+        </div>
       )}
-    </ol>
+    </div>
   );
 }
 
