@@ -6,6 +6,9 @@ import "./globals.css";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import Navbar from "./components/Navbar/Navbar";
+import Connectionloss from "./components/Losse/Connectionloss";
+import { useEffect } from "react";
+import SnackbarComponent from "./components/Snackbar/Snackbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,17 +30,38 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/service-worker.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch((error) => console.error("Service Worker registration failed:", error));
+    }
+  }, []);
+
+  //restore connection notification;
+  useEffect(() => {
+    const handleOnline = () => {
+      alert("Connection restored! Synchronizing data...");
+    };
+    window.addEventListener("online", handleOnline);
+    return () => window.removeEventListener("online", handleOnline);
+  }, []);
+  
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Provider store={store}>
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-
-            <main className="pt-16 flex-1 overflow-auto">{children}</main>
-          </div>
+          <Connectionloss>
+            <SnackbarComponent />
+            <div className="min-h-screen flex flex-col">
+              <Navbar />
+              <main className="pt-16 flex-1 overflow-auto">{children}</main>
+            </div>
+          </Connectionloss>
         </Provider>
       </body>
     </html>

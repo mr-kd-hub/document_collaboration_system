@@ -56,6 +56,8 @@ export const connectSocket = (socket: any) => {
 
   // Update the document content in real-time
   socket.on("updateDocument", async (payload: any) => {
+    console.log("payload",payload);
+    
     const docId = [...socket.rooms].find((room) => room !== socket.id);
     if (docId) {
       try {

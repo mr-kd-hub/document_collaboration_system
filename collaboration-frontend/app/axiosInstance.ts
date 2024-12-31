@@ -22,4 +22,19 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (!navigator.onLine) {
+      alert("You are offline. Retrying when connection is restored...");
+      return new Promise((resolve) => {
+        window.addEventListener("online", () => {
+          resolve(axiosInstance.request(error.config));
+        });
+      });
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default axiosInstance

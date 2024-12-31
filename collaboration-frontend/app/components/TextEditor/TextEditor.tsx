@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useEffect } from "react";
-import { socket } from "@/app/helper";
+import { randomColorPick, socket } from "@/app/helper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store";
 
@@ -45,11 +45,11 @@ function TextEditor(props: any) {
   const createCursorElement = (userId: string) => {
     const cursor = document.createElement("div");
     cursor.id = `cursor-${userId}`;
-    cursor.className = "absolute w-0.5 h-5 bg-[red] z-[1000];";
+    cursor.className = `absolute w-0.5 h-5 bg-[${randomColorPick()}] z-[1000];`;
     cursor.style.position = "absolute";
     cursor.style.width = "2px";
     cursor.style.height = "20px";
-    cursor.style.backgroundColor = "red";
+    cursor.style.backgroundColor = randomColorPick();
     cursor.style.zIndex = "1000";
 
     document.body.appendChild(cursor);
@@ -58,18 +58,21 @@ function TextEditor(props: any) {
 
   const updateCursorDisplay = (userId:string, position:any) => {
     const cursorElement = document.getElementById(`cursor-${userId}`) || createCursorElement(userId);
-    if (position.container) {
-      const targetElement = document.getElementById(position.container);
-      if (targetElement) {
-        const rect = targetElement.getBoundingClientRect();
-        const lineHeight = parseInt(window.getComputedStyle(targetElement).lineHeight, 10);
-        const offsetX = rect.left;
-        const offsetY = rect.top + lineHeight * position.line; // Account for the line position
+  if (position.container) {
+    const targetElement = document.getElementById(position.container) as HTMLTextAreaElement;
+    if (targetElement) {
+      const rect = targetElement.getBoundingClientRect();
+      const offsetX = rect.left;
 
-        cursorElement.style.left = `${offsetX + position.start}px`; // Horizontal position
-        cursorElement.style.top = `${offsetY}px`; // Vertical position (adjusted by line height)
-      }
+      const lineHeight = parseInt(window.getComputedStyle(targetElement).lineHeight, 10);
+      const textContent = targetElement.value;
+      const lineHeightMultiplier = Math.floor(position.start / textContent.length); 
+      const offsetY = rect.top + lineHeight * lineHeightMultiplier;
+
+      cursorElement.style.left = `${offsetX + position.start}px`;
+      cursorElement.style.top = `${offsetY}px`;
     }
+  }
   };
   
 
@@ -82,7 +85,6 @@ function TextEditor(props: any) {
         position: { start: number; end: number; container: string };
       }) => {
         console.log("cursor-update from BE",data);
-        
         updateCursorDisplay(data.userId, data.position);
       }
     );

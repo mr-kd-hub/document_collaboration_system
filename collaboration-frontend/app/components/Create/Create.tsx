@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import TextEditor from "../TextEditor/TextEditor";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -14,6 +14,9 @@ import { useFormik } from "formik";
 import Versions from "../Versions/Versions";
 import { resetDocument } from "@/app/redux/slice/dcuments.slice";
 import { socket } from "@/app/helper";
+import Loader from "@/app/loading";
+import FallbackUI from "@/app/error";
+import { Button, TextField } from "@mui/material";
 
 function CreateComponent(props: any) {
   const { id } = props;
@@ -21,7 +24,7 @@ function CreateComponent(props: any) {
   const currentDocument = useSelector(
     (state: RootState) => state.document.document
   );
-  const authDetail = useSelector((state: RootState) => state.auth.detail);
+  const loading = useSelector((state: RootState) => state.auth.loading);
 
   
 
@@ -76,6 +79,10 @@ function CreateComponent(props: any) {
       if (id) {
        await dispatch(getDocumentByIdAction(id));
       }
+      if(!id){
+        dispatch(resetDocument(id))
+        resetForm()
+      }
     }    
     callApi()
   }, [id, dispatch]);
@@ -113,6 +120,7 @@ function CreateComponent(props: any) {
 
       // Listen for real-time updates from other users
       socket.on("updateDocument", (payload) => {
+        console.log("updateDocument payload",payload);
         setValues((prev: any) => ({ ...prev, ...payload }));
       });
 
@@ -129,7 +137,7 @@ function CreateComponent(props: any) {
     }
   }, [documentId, setValues]);
 
-    //auto save document
+    // for auto save document
   // useEffect(() => {
     // const timer = setTimeout(() => {
     //   saveDocument();
@@ -138,7 +146,7 @@ function CreateComponent(props: any) {
   //   return () => clearTimeout(timer);
   // }, [values?.content, saveDocument]);
 
-  // Save document on page unload
+  //for save document on page unload
   // useEffect(() => {
   //   const handleBeforeUnload = (event: any) => {
   //     // Call saveDocument to persist the changes
@@ -204,43 +212,47 @@ function CreateComponent(props: any) {
 // };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col h-screen p-10 overflow-hidden">
-      <div className="mb-6">
-        <label htmlFor="default-input" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Title
-        </label>
-        <input
-          name="title"
-          value={title || ""}
-          onChange={handleTitleChange}
-          type="text"
-          id="default-input"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        />
-      </div>
-
-      <div className="flex flex-1 gap-6">
-        <div className="w-[75%] flex flex-col gap-6 overflow-hidden">
-          <TextEditor
-            setValues={setValues}
-            content={content}
-            handleChange={handleChange}
-            documentId={documentId}
+    loading ? <div className="loading"><Loader /></div> :
+    <Suspense fallback={<FallbackUI />}>
+      <form onSubmit={handleSubmit} className="flex flex-col h-screen p-10 overflow-hidden">
+        <div className="mb-6">
+          <label htmlFor="default-input" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Title
+          </label>
+          <TextField
+            name="title"
+            value={title || ""}
+            onChange={handleTitleChange}
+            type="text"
+            id="default-input"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
-          <button
-            type="submit"
-            disabled={!dirty}
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Save
-          </button>
         </div>
 
-        <div className="w-[25%] overflow-y-auto">
-          <Versions loadVersion={loadversion} versionList={values?.versions || []} />
+        <div className="flex flex-1 gap-6">
+          <div className="w-[75%] flex flex-col gap-6 overflow-hidden">
+            <TextEditor
+              setValues={setValues}
+              content={content}
+              handleChange={handleChange}
+              documentId={documentId}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={!dirty}
+              // className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              Save
+            </Button>
+          </div>
+
+          <div className="w-[25%] overflow-y-auto">
+            <Versions loadVersion={loadversion} versionList={values?.versions || []} />
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </Suspense>
   );
 }
 

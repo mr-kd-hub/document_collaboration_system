@@ -1,22 +1,21 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import Link from "next/link";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { AppDispatch } from "../../redux/store";
+import { AppDispatch, RootState } from "../../redux/store";
 import { registerAction } from "../../redux/actions/auth.action";
 import { useRouter } from 'next/navigation';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/app/redux/slice/auth.slice";
+import Loader from "@/app/loading";
+import FallbackUI from "@/app/error";
+import { Button, TextField } from "@mui/material";
 
 function SignUpCompoent() {
   const dispatch = useDispatch<AppDispatch>();
-
-  // const pathName = usePathname();
-
-  
+  const loading = useSelector((state: RootState) => state.auth.loading);  
   const router = useRouter()
-  // const searchParams = useSearchParams()
 
   const formik = useFormik({
     initialValues: {
@@ -33,17 +32,20 @@ function SignUpCompoent() {
       if (status === 200) {
         router.push("/");
         resetForm();
+        return;
       }
       setValues({ ...values, error: "Already register" });
     },
   });
-  const { values, handleChange, handleSubmit, handleBlur } = formik;
+  const { values, handleChange, handleSubmit, handleBlur, errors, touched } = formik;
   const { email, password, error } = values;
   useEffect(()=>{
     dispatch(logout());
   },[dispatch])
-  return (
-    <div>
+  return (loading ? <div className="loading">
+        <Loader />
+      </div> :
+    <Suspense fallback={<FallbackUI />}>
       <section className="bg-gray-50 dark:bg-gray-900">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
@@ -59,7 +61,8 @@ function SignUpCompoent() {
                   >
                     Your email
                   </label>
-                  <input
+                  <TextField
+                    error={!!(touched?.email && errors?.email)} 
                     name="email"
                     type="email"
                     value={email}
@@ -77,7 +80,7 @@ function SignUpCompoent() {
                   >
                     Password
                   </label>
-                  <input
+                  <TextField
                     name="password"
                     type="password"
                     value={password}
@@ -85,16 +88,19 @@ function SignUpCompoent() {
                     required
                     onBlur={handleBlur}
                     placeholder="••••••••"
+                    error={!!(touched?.password && errors?.password)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   />
                 </div>
 
-                <button
+                <Button
+                variant="contained"
+                disabled={loading}
                   type="submit"
                   className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
                   Create an account
-                </button>
+                </Button>
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Already have an account?{" "}
                   <Link
@@ -110,7 +116,7 @@ function SignUpCompoent() {
           </div>
         </div>
       </section>
-    </div>
+    </Suspense>
   );
 }
 

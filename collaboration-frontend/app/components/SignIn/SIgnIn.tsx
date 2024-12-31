@@ -1,17 +1,20 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { loginAction } from "@/app/redux/actions/auth.action";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/app/redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/app/redux/store";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useRouter } from 'next/navigation';
+import Loader from "@/app/loading";
+import FallbackUI from "@/app/error";
+import { Button, TextField } from "@mui/material";
 
 function SignInComponet() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter()
-
+  const loading = useSelector((state: RootState) => state.auth.loading);
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -27,14 +30,20 @@ function SignInComponet() {
       if (status === 200) {
         router.push("/");
         resetForm();
+        return;
       }
       setValues({ ...values, error: "Invalid details" });
     },
   });
-  const { values, handleChange, handleSubmit, handleBlur } = formik;
+  const { values, handleChange, handleSubmit, handleBlur, errors, touched } = formik;
   const { email, password, error } = values;
+  console.log(":",errors);
+  
   return (
-    <>
+    loading ? <div className="loading">
+      <Loader />
+    </div> : 
+    <Suspense fallback={<FallbackUI />}>
       <section className="bg-gray-50 dark:bg-gray-900">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           
@@ -51,7 +60,7 @@ function SignInComponet() {
                   >
                     Your email
                   </label>
-                  <input
+                  <TextField
                     name="email"
                     type="email"
                     value={email}
@@ -60,7 +69,7 @@ function SignInComponet() {
                     onBlur={handleBlur}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="name@company.com"
-                    // required=""
+                    error={!!(touched?.error && errors?.email)}
                   />
                 </div>
                 <div>
@@ -70,7 +79,7 @@ function SignInComponet() {
                   >
                     Password
                   </label>
-                  <input
+                  <TextField
                    name="password"
                    type="password"
                    placeholder="Password"
@@ -78,17 +87,22 @@ function SignInComponet() {
                    onChange={handleChange}
                    required
                    onBlur={handleBlur}
+                   error={!!(touched?.password && errors?.password)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   />
                 </div>
                
                 
-                <button
+                <Button
                   type="submit"
+                  variant="contained"
+                  fullWidth
+                  disabled={loading}
+                  // onClick={handleSubmit}
                   className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
                   Sign in
-                </button>
+                </Button>
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                   Don`t have an account?{" "}
                   <Link
@@ -104,7 +118,7 @@ function SignInComponet() {
           </div>
         </div>
       </section>
-    </>
+    </Suspense>
   );
 }
 

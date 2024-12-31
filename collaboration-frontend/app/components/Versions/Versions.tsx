@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Typography } from "@mui/material";
 import React from "react";
 
 function Versions(props: { versionList: any[]; loadVersion: any }) {
@@ -24,16 +25,16 @@ function Versions(props: { versionList: any[]; loadVersion: any }) {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 {version.title || "Untitled document"}
               </h3>
-              <p className="text-base text-gray-700 dark:text-gray-400 truncate">
+              <Typography className="text-base text-gray-700 dark:text-gray-400 truncate">
                 {version.content || "No content available."}
-              </p>
+              </Typography>
             </li>
           ))}
         </ul>
       ) : (
-        <div className="flex justify-center items-center p-2 text-gray-500 dark:text-gray-400">
+        <Typography className="flex justify-center items-center p-2 text-gray-500 dark:text-gray-400">
           No versions available
-        </div>
+        </Typography>
       )}
     </div>
   );

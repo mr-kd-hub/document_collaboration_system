@@ -12,6 +12,15 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      animation: {
+        progress: "progress 2s infinite ease-in-out",
+      },
+      keyframes: {
+        progress: {
+          "0%, 100%": { width: "0%" },
+          "50%": { width: "100%" },
+        },
+      },
     },
   },
   plugins: [],

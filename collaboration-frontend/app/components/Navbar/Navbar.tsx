@@ -3,9 +3,10 @@ import { RootState } from "@/app/redux/store";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
-import { logout } from "@/app/redux/slice/auth.slice";
+import { logout, manageLoading } from "@/app/redux/slice/auth.slice";
 import { useRouter, usePathname } from "next/navigation";
 import { setAuthStateAction } from "@/app/redux/actions/auth.action";
+import { Button } from "@mui/material";
 
 function Navbar() {
   const isAuthenticated = useSelector(
@@ -22,8 +23,10 @@ function Navbar() {
   const pathName = usePathname();
   
   const handleLogout = () => {
-    dispatch(logout()); // Dispatch the logout action
-    router.push("/sign-in"); // Redirect to login page
+    dispatch(manageLoading(true));
+    dispatch(logout());
+    router.push("/sign-in");
+    dispatch(manageLoading(false));
   };
 
   useEffect(()=>{
@@ -60,12 +63,14 @@ function Navbar() {
               <div className="hidden md:block text-sm font-medium text-gray-900 dark:text-white">
                 {authDetail?.email}
               </div>
-              <button
+              <Button
+               variant="outlined"
+            size="medium"
                 onClick={handleLogout}
-                className="py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-colors duration-200"
+                // className="py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-colors duration-200"
               >
                 Log out
-              </button>
+              </Button>
             </>
           ) : (
             <div className="flex gap-4">
@@ -91,7 +96,7 @@ function Navbar() {
 
         {/* Mobile Menu Toggle */}
         <div className="md:hidden">
-          <button className="text-gray-900 dark:text-white">
+          <Button className="text-gray-900 dark:text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -106,7 +111,7 @@ function Navbar() {
                 d="M4 6h16M4 12h16M4 18h16"
               />
             </svg>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -125,12 +130,14 @@ function Navbar() {
           New Document
         </Link></>}
         {isAuthenticated ? (
-          <button
+          <Button
+            variant="outlined"
+            size="medium"
             onClick={handleLogout}
-            className="block py-2 px-3 text-lg font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-colors duration-200"
+            // className="block py-2 px-3 text-lg font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition-colors duration-200"
           >
             Log out
-          </button>
+          </Button>
         ) : (
           <>
             <Link
