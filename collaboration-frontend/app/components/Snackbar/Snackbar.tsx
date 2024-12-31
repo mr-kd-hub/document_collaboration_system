@@ -61,4 +61,4 @@ const SnackbarComponent = () => {
   );
 };
 
-export default SnackbarComponent;
+export default React.memo(SnackbarComponent);

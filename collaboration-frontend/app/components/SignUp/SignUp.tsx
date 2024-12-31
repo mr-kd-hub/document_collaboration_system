@@ -120,4 +120,4 @@ function SignUpCompoent() {
   );
 }
 
-export default SignUpCompoent;
+export default React.memo(SignUpCompoent);

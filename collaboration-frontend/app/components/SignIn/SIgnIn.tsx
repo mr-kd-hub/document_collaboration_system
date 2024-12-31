@@ -122,4 +122,4 @@ function SignInComponet() {
   );
 }
 
-export default SignInComponet;
+export default React.memo(SignInComponet);

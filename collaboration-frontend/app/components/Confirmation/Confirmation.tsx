@@ -8,7 +8,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 
-export default function Confirmation({ onClose, onSave, open }:any) {
+function Confirmation({ onClose, onSave, open }:any) {
 
 
   return (
@@ -37,3 +37,5 @@ export default function Confirmation({ onClose, onSave, open }:any) {
     // </React.Fragment>
   );
 }
+
+export default React.memo(Confirmation)
